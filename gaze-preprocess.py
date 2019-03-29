@@ -5,7 +5,7 @@ import numpy as np
 import scipy.io as sio
 
 path_data = 'res/data/extract/MPIIGaze/Data/Normalized'
-out = 'res/data/extract/MPIIGaze/out'
+out = 'res/out'
 
 
 def __read_mat(path_mat):

@@ -12,7 +12,7 @@ from keras.optimizers import RMSprop
 from tensorflow import acos
 
 
-path_data = os.path.join(os.getcwd(), 'res/data/extract/MPIIGaze/out.npz')
+path_data = os.path.join(os.getcwd(), 'res/out.npz')
 path_log = os.path.join(os.getcwd(), 'res/log')
 
 
@@ -88,7 +88,7 @@ x_train, y_train, x_poses_train, x_test, y_test, x_poses_test = load_data(path_d
 history = model.fit([x_train, x_poses_train], y_train, epochs=50, batch_size=256, validation_data=([x_test, x_poses_test], y_test), callbacks=[csv_logger])
 
 
-model.save(os.path.join(os.getcwd(), 'main/res/', 'gz_md_l.dat'))
+model.save(os.path.join(session_path, 'gaze-model.dat'))
 
 history = history.history
 
