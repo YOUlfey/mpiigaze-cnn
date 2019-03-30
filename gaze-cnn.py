@@ -53,7 +53,7 @@ def degrees_mean_error(y_true, y_pred):
     return acos(angles) * 180 / np.pi
 
 
-infile = open(os.path.join(os.getcwd(), 'res/default.model.json'), 'r')
+infile = open(os.path.join(os.getcwd(), 'res/default-model.json'), 'r')
 model = model_from_json(json.load(infile))
 
 if not os.path.exists(path_log):
