@@ -3,9 +3,14 @@ import os
 import cv2 as cv
 import numpy as np
 import scipy.io as sio
+import argparse
 
-path_data = 'res/data/extract/MPIIGaze/Data/Normalized'
-out = 'res/out'
+
+def parser_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data', type=str, default='res/data/extract/MPIIGaze/Data/Normalized')
+    parser.add_argument('--out', type=str, default='res/data/out.npz')
+    return parser.parse_args()
 
 
 def __read_mat(path_mat):
@@ -29,13 +34,13 @@ def __convert_gaze(vect):
     return np.array([theta, phi])
 
 
-def __get_data():
+def __get_data(path_data):
     images = []
     poses = []
     gazes = []
 
-    for patient in os.listdir(os.path.join(os.getcwd(),path_data)):
-        full_path_patient = os.path.join(os.getcwd(), path_data, patient)
+    for patient in os.listdir(path_data):
+        full_path_patient = os.path.join(path_data, patient)
         for day_name in os.listdir(full_path_patient):
             full_day_path = os.path.join(full_path_patient, day_name)
             print('Read data from: ', full_day_path)
@@ -74,5 +79,6 @@ def __get_data():
     return images, poses, gazes
 
 
-img, pss, gzs= __get_data()
-np.savez(os.path.join(os.getcwd(), out), image=img, pose=pss, gaze=gzs)
+args = parser_args()
+img, pss, gzs = __get_data(args.data)
+np.savez(args.out, image=img, pose=pss, gaze=gzs)

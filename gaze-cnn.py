@@ -6,13 +6,18 @@ import numpy as np
 from keras.backend import cos, sin, sqrt
 from keras.backend import mean
 from keras.callbacks import CSVLogger
-from keras.models import Model, model_from_json
+from keras.models import model_from_json
 from keras.optimizers import RMSprop
 from tensorflow import acos
+import argparse
 
 
-path_data = os.path.join(os.getcwd(), 'res/out.npz')
-path_log = os.path.join(os.getcwd(), 'res/log')
+def parser_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data', type=str, default='res/data/out.npz')
+    parser.add_argument('--log', type=str, default='res/log')
+    parser.add_argument('--model', type=str, default='res/default-model.json')
+    return parser.parse_args()
 
 
 def load_data(path):
@@ -52,13 +57,14 @@ def degrees_mean_error(y_true, y_pred):
     return acos(angles) * 180 / np.pi
 
 
-infile = open(os.path.join(os.getcwd(), 'res/default-model.json'), 'r')
+args = parser_args()
+infile = open(args.model, 'r')
 model = model_from_json(json.load(infile))
 
-if not os.path.exists(path_log):
-    os.mkdir(path_log)
+if not os.path.exists(args.log):
+    os.mkdir(args.log)
 
-session_path = os.path.join(path_log, datetime.now().isoformat())
+session_path = os.path.join(args.log, datetime.now().isoformat())
 if not os.path.exists(session_path):
     os.mkdir(session_path)
 
@@ -70,7 +76,7 @@ with open(os.path.join(session_path, 'scheme.txt'), 'w') as fh:
 
 model.compile(optimizer=RMSprop(lr=0.0001), loss=degrees_mean_error, metrics=['acc'])
 
-x_train, y_train, x_poses_train, x_test, y_test, x_poses_test = load_data(path_data)
+x_train, y_train, x_poses_train, x_test, y_test, x_poses_test = load_data(args.data)
 
 history = model.fit([x_train, x_poses_train], y_train, epochs=50, batch_size=100, validation_data=([x_test, x_poses_test], y_test), callbacks=[csv_logger])
 

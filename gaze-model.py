@@ -2,6 +2,13 @@ from keras.layers import Conv2D, MaxPool2D, Dense, Flatten, Input, Concatenate, 
 from keras.models import Model
 import os
 import json
+import argparse
+
+
+def parser_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', type=str, default='res/default-model.json')
+    return parser.parse_args()
 
 
 def __get_model():
@@ -18,8 +25,9 @@ def __get_model():
     return Model(inputs=[image_input, poses_input], outputs=output)
 
 
+args = parser_args()
 model = __get_model()
 json_str = model.to_json()
-model_file = open(os.path.join(os.getcwd(), 'res/default-model.json'), 'w')
+model_file = open(args.model, 'w')
 json.dump(json_str, model_file, indent=2)
 model_file.close()
