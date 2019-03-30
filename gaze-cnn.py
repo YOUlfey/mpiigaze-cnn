@@ -6,8 +6,7 @@ import numpy as np
 from keras.backend import cos, sin, sqrt
 from keras.backend import mean
 from keras.callbacks import CSVLogger
-from keras.layers import Conv2D, MaxPool2D, Dense, Flatten, Input, Concatenate, Dropout
-from keras.models import Model
+from keras.models import Model, model_from_json
 from keras.optimizers import RMSprop
 from tensorflow import acos
 
@@ -35,19 +34,6 @@ def load_data(path):
     return train_images, train_gazes, train_poses, test_images, test_gazes, test_poses
 
 
-def __get_model():
-    image_input = Input((36, 60, 1))
-    poses_input = Input((2, ))
-    conv_layer = Conv2D(20, (5, 5), activation='relu')(image_input)
-    maxpool_layer = MaxPool2D((2, 2))(conv_layer)
-    conv_layer = Conv2D(50, (5, 5), activation='relu')(maxpool_layer)
-    maxpool_layer = MaxPool2D((2, 2))(conv_layer)
-    flatten_layer = Flatten()(maxpool_layer)
-    dense_layer = Dense(500, activation='relu')(flatten_layer)
-    concat_layer = Concatenate()([dense_layer, poses_input])
-    output = Dense(2)(concat_layer)
-    return Model(inputs=[image_input, poses_input], outputs=output)
-
 
 def convert_gaze(angles):
     x = -cos(angles[:, 0]) * sin(angles[:, 1])
@@ -67,13 +53,14 @@ def degrees_mean_error(y_true, y_pred):
     return acos(angles) * 180 / np.pi
 
 
+model = model_from_json(json.load(os.path.join(os.getcwd(), 'res/default.model.json')))
+
 if not os.path.exists(path_log):
     os.mkdir(path_log)
 
 session_path = os.path.join(path_log, datetime.now().isoformat())
 if not os.path.exists(session_path):
     os.mkdir(session_path)
-model = __get_model()
 
 csv_logger = CSVLogger(os.path.join(session_path, 'log_fit.csv'), append=True, separator=';')
 
@@ -81,14 +68,14 @@ csv_logger = CSVLogger(os.path.join(session_path, 'log_fit.csv'), append=True, s
 with open(os.path.join(session_path, 'scheme.txt'),'w') as fh:
     model.summary(print_fn=lambda x: fh.write(x + '\n'))
 
-model.compile(optimizer=RMSprop(lr=0.00001), loss=degrees_mean_error, metrics=['acc'])
+model.compile(optimizer=RMSprop(lr=0.0001), loss=degrees_mean_error, metrics=['acc'])
 
 x_train, y_train, x_poses_train, x_test, y_test, x_poses_test = load_data(path_data)
 
-history = model.fit([x_train, x_poses_train], y_train, epochs=50, batch_size=256, validation_data=([x_test, x_poses_test], y_test), callbacks=[csv_logger])
+history = model.fit([x_train, x_poses_train], y_train, epochs=50, batch_size=100, validation_data=([x_test, x_poses_test], y_test), callbacks=[csv_logger])
 
 
-model.save(os.path.join(session_path, 'gaze-model.dat'))
+model.save(os.path.join(session_path, 'gaze-model.h5'))
 
 history = history.history
 
