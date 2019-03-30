@@ -27,7 +27,7 @@ def __get_model():
 
 args = parser_args()
 model = __get_model()
-json_str = model.to_json()
+obj = json.loads(model.to_json())
 model_file = open(args.model, 'w')
-json.dump(json_str, model_file, indent=2)
+json.dump(obj, model_file, indent=2)
 model_file.close()

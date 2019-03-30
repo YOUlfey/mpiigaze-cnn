@@ -17,6 +17,8 @@ def parser_args():
     parser.add_argument('--data', type=str, default='res/data/out.npz')
     parser.add_argument('--log', type=str, default='res/log')
     parser.add_argument('--model', type=str, default='res/default-model.json')
+    parser.add_argument('--epochs', type=int, default=40)
+    parser.add_argument('--batch', type=int, default=512)
     return parser.parse_args()
 
 
@@ -59,7 +61,8 @@ def degrees_mean_error(y_true, y_pred):
 
 args = parser_args()
 infile = open(args.model, 'r')
-model = model_from_json(json.load(infile))
+obj = json.load(infile)
+model = model_from_json(json.dumps(obj))
 
 if not os.path.exists(args.log):
     os.mkdir(args.log)
@@ -78,7 +81,7 @@ model.compile(optimizer=RMSprop(lr=0.0001), loss=degrees_mean_error, metrics=['a
 
 x_train, y_train, x_poses_train, x_test, y_test, x_poses_test = load_data(args.data)
 
-history = model.fit([x_train, x_poses_train], y_train, epochs=50, batch_size=100, validation_data=([x_test, x_poses_test], y_test), callbacks=[csv_logger])
+history = model.fit([x_train, x_poses_train], y_train, epochs=args.epochs, batch_size=args.batch, validation_data=([x_test, x_poses_test], y_test), callbacks=[csv_logger])
 
 
 model.save(os.path.join(session_path, 'gaze-model.h5'))
