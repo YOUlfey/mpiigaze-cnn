@@ -20,6 +20,6 @@ def __get_model():
 
 model = __get_model()
 json_str = model.to_json()
-model_file = open(os.path.join(os.getcwd(), 'res/default-model.json'))
+model_file = open(os.path.join(os.getcwd(), 'res/default-model.json'), 'w')
 json.dump(json_str, model_file, indent=2)
 model_file.close()
