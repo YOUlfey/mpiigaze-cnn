@@ -12,8 +12,8 @@ def parser_args():
 
 
 def __get_model():
-    image_input = Input((36, 60, 1))
-    poses_input = Input((2, ))
+    image_input = Input((36, 60, 1), name='input_layer_eye_image')
+    poses_input = Input((2, ), name='input_layer_pose_head')
     conv_layer = Conv2D(20, (5, 5), activation='relu')(image_input)
     maxpool_layer = MaxPool2D((2, 2))(conv_layer)
     conv_layer = Conv2D(50, (5, 5), activation='relu')(maxpool_layer)
