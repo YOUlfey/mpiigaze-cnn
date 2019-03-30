@@ -29,9 +29,9 @@ def load_data(path):
     train_images = images[0:index]
     train_gazes = gazes[0:index]
     train_poses = poses[0:index]
-    test_images = images[len(train_images):index]
-    test_gazes = gazes[len(train_gazes):index]
-    test_poses = poses[len(train_poses):index]
+    test_images = images[index:len(images)]
+    test_gazes = gazes[index:len(gazes)]
+    test_poses = poses[index:len(poses)]
     train_images = np.reshape(train_images, (len(train_images), 36, 60, 1))
     train_images = train_images.astype('float32') / 255
     test_images = np.reshape(test_images, (len(test_images), 36, 60, 1))
