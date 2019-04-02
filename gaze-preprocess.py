@@ -55,6 +55,8 @@ def __get_data(path_data):
             right_poses = content.right.pose
             right_gazes = content.right.gaze
 
+            print(left_poses, right_poses)
+
             if left_images.shape == (36, 60):
                 left_images = left_images[np.newaxis, :, :]
                 left_gazes = left_gazes[np.newaxis, :]
@@ -81,4 +83,4 @@ def __get_data(path_data):
 
 args = parser_args()
 img, pss, gzs = __get_data(args.data)
-np.savez(args.out, image=img, pose=pss, gaze=gzs)
+# np.savez(args.out, image=img, pose=pss, gaze=gzs)
