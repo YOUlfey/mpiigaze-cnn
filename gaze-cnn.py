@@ -27,7 +27,7 @@ def load_data(path):
     gazes = data['gaze']
     images = data['image']
     poses = data['pose']
-    index = int(len(gazes) * 0.5)
+    index = int(len(gazes) * 0.75)
     train_images = images[0:index]
     train_gazes = gazes[0:index]
     train_poses = poses[0:index]
